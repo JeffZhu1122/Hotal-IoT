@@ -1,0 +1,12 @@
+rule "turn off everything"
+when
+    Item ruleTest changed from ON to OFF
+then
+    if(systemControl.state==OFF){
+        lightBulbsColor.sendCommand(OFF)
+        lightStripsColor.sendCommand(OFF)
+        nestStop.sendCommand(ON)
+        chromecastStop.sendCommand(ON)
+    }
+    
+end

@@ -1,0 +1,103 @@
+
+/* Create a specific light environment for different movie genres */
+
+rule "19:00 - 20:00 Lights"
+when
+    Time cron "0 0 19 ? * * *" // or Item ruleTest changed from OFF to ON // 19:00 everyday
+then
+    if(systemControl.state==ON){
+        // All light bulbs off
+        lightBulbsColor.sendCommand(OFF)
+    }
+end
+
+rule "Comedy Switch"
+when
+    Item ComedySwitch changed from OFF to ON // When a comedy movie is showing
+then
+    // Turn off other switches
+    FictionSwitch.sendCommand(OFF)
+    CartoonSwitch.sendCommand(OFF)
+
+    // Turn on all light strips
+    lightStripsColor.sendCommand(ON)
+    // Specific light strip color for comedy movie
+    lightStripsColor.sendCommand(new HSBType("60,55,55")) // yellow
+end
+
+rule "Fiction Switch"
+when
+    Item FictionSwitch changed from OFF to ON // When a fiction movie is showing
+then
+    // Turn off other switches
+    ComedySwitch.sendCommand(OFF)
+    CartoonSwitch.sendCommand(OFF)
+    
+    // Turn on all light strips
+    lightStripsColor.sendCommand(ON)
+    // Specific light strip color for fiction movie
+    lightStripsColor.sendCommand(new HSBType("330,55,55")) // pink
+end
+
+rule "Cartoon Switch"
+when
+    Item CartoonSwitch changed from OFF to ON // When a cartoon movie is showing
+then
+    // Turn off other switches
+    ComedySwitch.sendCommand(OFF)
+    FictionSwitch.sendCommand(OFF)
+    
+    // Turn on all light strips
+    lightStripsColor.sendCommand(ON)
+    // Specific light strip color for cartoon movie
+    lightStripsColor.sendCommand(new HSBType("200,55,55")) // blue
+end
+
+
+/* Randomly play a movie from server files */
+
+rule "19:00 - 20:00 Projector & Movie"
+when
+    Time cron "0 0 19-20 ? * * *" //or Item ruleTest changed from OFF to ON// 19:00-20:00 everyday
+then
+    if(systemControl.state==ON){
+        sendHttpGetRequest("https://request-soft3888.ddns.net/movie")
+        chromecastControl.sendCommand(PLAY)
+        chromecastVolume.sendCommand(50)
+    }
+
+end
+
+
+/* The movie stops, and all lights on when the period comes to the end */
+
+rule "19:59 Projector & Movie stop and Light bulbs on"
+when
+  Time cron "0 59 19 ? * * *" // or Item ruleTest changed from OFF to ON
+then
+    if(systemControl.state==ON){
+        // Projector & Movie stop  
+        chromecastStop.sendCommand(ON)
+        // All light bulbs on
+        lightBulbsColor.sendCommand(ON)
+        lightBulbsColor.sendCommand(new HSBType("30,50,100")) // orange
+        // Light strips change color
+        lightStripsColor.sendCommand(new HSBType("30,50,100")) // orange
+    }
+
+end
+
+
+
+
+/* Wait to be implemented in the future */
+
+rule "19:00 - 20:00 Temperature"
+when
+    Time cron "0 0 19-20 ? * * *" // or Item ruleTest changed from OFF to ON// 19:00-20:00 everyday
+then
+    if(systemControl.state==ON){
+
+    }
+
+end

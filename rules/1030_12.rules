@@ -1,0 +1,35 @@
+//This is the rule for time between 10:30 AM and 12:00 AM
+//Right now depnds on the weather outside 
+//the lightbulbs, light strips, speaker and projector will behave differently
+
+/*
+The syntax follows as rule + "<name of your rule"
+                      when
+                          <Trigger conditon> [or <trigger condtion 2> and <trigger conditon3>...]
+                      then
+                          <script>
+                      end
+*/
+
+rule "1030_1200 pm"
+when
+    Time cron "0 30 10 ? * * *" // A time trigger (can be any other stuff i.e. a switch)
+then
+    if(systemControl.state == ON){
+        if((clouds.state as DecimalType) >= 50 || (rain.state as DecimalType) > 0){
+            lightBulbsColor.sendCommand((new HSBType(new DecimalType(26), new PercentType(100), new PercentType(72))).toString)
+            //light strip has to be on before changing their color 
+            lightStripsColor.sendCommand(ON)
+            lightStripsColor.sendCommand((new HSBType(new DecimalType(26), new PercentType(90), new PercentType(40))).toString)
+            chromecastPlay.sendCommand("https://api-soft3888.ddns.net/rain.mp4")
+            chromecastVolume.sendCommand(100)
+            chromecastControl.sendCommand(PLAY)
+        }else{
+            chromecastPlay.sendCommand("https://api-soft3888.ddns.net/sunny_930am.gif")
+            lightBulbsColor.sendCommand((new HSBType(new DecimalType(190), new PercentType(100), new PercentType(10))).toString)
+            chromecastVolume.sendCommand(100)
+            chromecastControl.sendCommand(PLAY)
+        }
+    }
+end
+//TODO - temperature

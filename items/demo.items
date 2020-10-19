@@ -1,0 +1,79 @@
+//Name convention = Name + number + channel
+
+// Light bulbs
+Group lightBulbsColor <light>
+
+Color lightBulb1Color <light> (lightBulbsColor) {channel="tplinksmarthome:kl130:DB4E6B:color"}
+Color lightBulb2Color <light> (lightBulbsColor) {channel="tplinksmarthome:kl130:DC0CFA:color"}
+Color lightBulb3Color <light> (lightBulbsColor) {channel="tplinksmarthome:kl130:EAE839:color"}
+Color lightBulb4Color <light> (lightBulbsColor) {channel="tplinksmarthome:kl130:EA2E68:color"}
+Color lightBulb5Color <light> (lightBulbsColor) {channel="tplinksmarthome:kl130:E0A4AA:color"}
+
+Switch lightBulb1Switch "light Bulb 1 Switch" <light> {channel="tplinksmarthome:kl130:DB4E6B:color"}
+Switch lightBulb2Switch "light Bulb 2 Switch" <light> {channel="tplinksmarthome:kl130:DC0CFA:color"}
+Switch lightBulb3Switch "light Bulb 3 Switch" <light> {channel="tplinksmarthome:kl130:EAE839:color"}
+Switch lightBulb4Switch "light Bulb 4 Switch" <light> {channel="tplinksmarthome:kl130:EA2E68:color"}
+Switch lightBulb5Switch "light Bulb 5 Switch" <light> {channel="tplinksmarthome:kl130:E0A4AA:color"}
+
+// Light strips
+Group lightStripsColor <light>
+
+Color lightStrip1Color <light> (lightStripsColor) {channel="yeelight:stripe:0x0000000008019729:color"}
+Color lightStrip2Color <light> (lightStripsColor) {channel="yeelight:stripe:0x0000000008019f15:color"}
+
+Switch lightStrip1Switch "Light Strip 1" <light> {channel="yeelight:stripe:0x0000000008019729:color"}
+Switch lightStrip2Switch "Light Strip 2" <light> {channel="yeelight:stripe:0x0000000008019f15:color"}
+
+// Chromecast
+Player chromecastControl {channel="chromecast:chromecast:73ce21c66a40973a3da7287951c49863:control"}
+Dimmer chromecastVolume {channel="chromecast:chromecast:73ce21c66a40973a3da7287951c49863:volume"}
+String chromecastPlay {channel="chromecast:chromecast:73ce21c66a40973a3da7287951c49863:playuri"}
+Switch chromecastStop {channel="chromecast:chromecast:73ce21c66a40973a3da7287951c49863:stop"}
+
+// Google Nest Mini
+Player nestControl {channel="chromecast:chromecast:00cad843cd548ab0a71c3cb486a1c972:control"}
+Dimmer nestVolume {channel="chromecast:chromecast:00cad843cd548ab0a71c3cb486a1c972:volume"}
+String nestPlay {channel="chromecast:chromecast:00cad843cd548ab0a71c3cb486a1c972:playuri"}
+Switch nestStop {channel="chromecast:chromecast:00cad843cd548ab0a71c3cb486a1c972:stop"}
+
+// Sensors
+Number:Temperature IRSensorTemperature "IR Sensor (temperature)" {channel="zwave:device:controller:node3:sensor_temperature"}
+Number IRBatteryLevel "IR Battery level" {channel="zwave:device:controller:node3:battery-level"}
+
+Number SensorLuminance1 "Sensor1 (luminance)" {channel="zwave:device:controller:node2:sensor_luminance"}
+Switch AlarmMotion1 "Motion1 alarm" {channel="zwave:device:controller:node2:alarm_motion", expire="2m,command=OFF"}
+Number BatteryLevel1 "Battery1 level" {channel="zwave:device:controller:node2:battery-level"}
+
+Number SensorLuminance2 "Sensor2 (luminance)" {channel="zwave:device:controller:node4:sensor_luminance"}
+Switch AlarmMotion2 "Motion2 alarm" {channel="zwave:device:controller:node4:alarm_motion", expire="2m,command=OFF"}
+Number BatteryLevel2 "Battery2 level" {channel="zwave:device:controller:node4:battery-level"}
+
+Number rain "Rain [%.2f mm/h]" {weather="locationId=home, type=precipitation, property=rain"}
+Number clouds "Clouds [%.0f %%]" {weather="locationId=home, type=clouds, property=percent"}
+String condition "Condition [%s]" {weather="locationId=home, type=condition, property=text"}
+
+// Genre switches
+Switch ComedySwitch "Comedy Switch"
+Switch FictionSwitch "Fiction Switch"
+Switch CartoonSwitch "Cartoon Switch"
+
+// Test
+Switch ManualOverride "Emergency Light"
+Switch TimerCancel "Cancel Timer"
+Switch ruleTest "rule tester"
+Switch systemControl "control all rules"
+
+/////////////////// Items not in use ///////////////////
+
+Switch GF_Bath "Bath Ground Floor"   <light> ["Switchable"] { knx="5/1/41" } 
+Switch PresenceSimulation  "Presence Simulation" [ "Switchable" ]
+DateTime MoonRiseStart "Start time" {channel="astro:moon:local:rise#start"}
+DateTime SunRiseStart "Start time" {channel="astro:sun:local:rise#start"}
+
+Switch Projector {channel="chromecast:chromecast:73ce21c66a40973a3da7287951c49863:stop"}
+
+Number:Temperature SensorTemperature "IR Sensor (temperature)" {channel="zwave:device:controller:node3:sensor_temperature"}
+Number BatteryLevel "IR Battery level" {channel="zwave:device:controller:node3:battery-level"}
+
+Number AlarmHour "Set Alarm(Hour) [%s] "
+Number AlarmMins "Set Alarm(Min) [%s] " 

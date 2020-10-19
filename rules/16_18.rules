@@ -1,0 +1,79 @@
+//As the room, I want to relax after exercising and appreciate the outside scene, so that I can release my tiredness and enjoy the charming sunset.
+var Timer myTimer = null
+rule "16:00 to 18:00 light" //set the rule for light from 16:00 to 18:00; lights fade in gradually
+when
+  //(the second sentence is for testing, ignore)
+  Time cron "0 0 16 ? * * * " // or Item ruleTest changed from OFF to ON 
+then
+  if(systemControl.state==ON){
+      var int hue_color = 60
+      var int passed_minutes = 0
+      //Change light color from white to yellow and to orange (mimic the color change of the sun)
+      lightBulbsColor.sendCommand(new HSBType("60,80,60"))
+      lightStripsColor.sendCommand(new HSBType("60,80,60"))
+      lightStripsColor.sendCommand(ON)
+      
+      while (passed_minutes < 120){
+          if (myTimer == null){
+              myTimer = createTimer(now.plusMinutes(3), [ |
+                  passed_minutes = passed_minutes + 3
+                  lightBulbsColor.sendCommand(new HSBType(new DecimalType(hue_color), new PercentType(80), new PercentType(60)))
+                  lightStripsColor.sendCommand(new HSBType(new DecimalType(hue_color), new PercentType(80), new PercentType(60)))
+                  hue_color = hue_color - 1 
+                  myTimer = null
+              ])
+          }
+      }
+  }
+    
+ 
+    //Set temperature between 17-19OC depending on season (17OC during summer, 19OC during winter)
+    //not yet have IR; waiting for installation
+
+end
+
+rule "16:00 projector"//set the rule for projector from 16:00 (to 18:00)
+when
+  //(the second sentence is for testing, ignore)
+  Time cron "0 0 16 ? * * *" // or Item ruleTest changed from OFF to ON
+then
+    //Close projector to enjoy the sunset scene  
+    if(systemControl.state==ON){
+      chromecastStop.sendCommand(ON)
+    }
+end
+
+rule "16:00 music" //set the rule for google nest(for playing music) from 16:00 (to 18:00)
+when
+  //from 16:00 - 18:00 loop songs every 2 minutes
+  //(the second sentence is for testing, ignore)
+  Time cron "0 */2 16,17 ? * *" // or Item ruleTest changed from OFF to ON
+then
+    //Play the ambient sounds like soft music
+    if(systemControl.state==ON){
+      sendHttpGetRequest("https://request-soft3888.ddns.net/sunset-sound")
+      nestControl.sendCommand(PLAY)
+      nestVolume.sendCommand(50)//set volume to 50
+    }
+end
+
+
+rule "17:59 music&projector stop"
+when
+  Time cron "0 59 17 ? * * *" //stop playing music and projector(already close) 
+then
+    //music stop  
+    nestStop.sendCommand(ON)
+end
+
+rule "cancel timer"
+when
+  Item TimerCancel changed from OFF to ON
+then
+    //cancel Timer 
+    if(myTimer !== null){  
+      myTimer.cancel()
+      myTimer = null
+    }
+    
+end

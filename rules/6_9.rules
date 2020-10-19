@@ -1,0 +1,74 @@
+var Timer timer = null
+var int brightness = 1
+
+// Light bulbs and light strips fade in with a white colour.
+rule "6:00am - 9:00am Lights"
+when
+    // At 6am every day
+    Time cron "0 0 6 ? * * *" // or Item ruleTest changed from OFF to ON
+then
+    // If the system is on
+    if(systemControl.state==ON){
+        // Turn the light strips on
+        lightStripsColor.sendCommand(ON) // Light strips need to be on to change colour
+        brightness = 1
+        // If the timer hasn't been set yet
+        if (timer === null) {
+            // Starting now
+            timer = createTimer(now.plusSeconds(0), [ |
+                // Increase light brightness   
+                lightBulbsColor.sendCommand((new HSBType(new DecimalType(60), new PercentType(0), new PercentType(brightness))).toString)
+                lightStripsColor.sendCommand((new HSBType(new DecimalType(60), new PercentType(0), new PercentType(brightness))).toString)
+                if (brightness == 50) {
+                    timer = null
+                    // Stop if brightness is at 50
+                } else {
+                    // Otherwise increment brightness 
+                    brightness = brightness + 1 // Increment brightness
+                    // Reschedule the timer in 108 seconds
+                    timer.reschedule(now.plusSeconds(108)) // Increase brightness every 1.8 minutes
+                }
+            ])
+        }
+    }
+end
+
+// Projector displays a vivid morning video (depend on seasons) in the last 30 minutes
+rule "6:00am - 9:00am Projector"
+when
+    // At 8:30am everyday
+    Time cron "0 30 8 ? * * *" // or Item ruleTest changed from OFF to ON
+then
+    // If the system is on
+    if(systemControl.state==ON){
+        var month = now.getMonthOfYear
+        // Play a different sunrise video depending on which season it is
+        if(month >= 3 && month <= 5) {
+            // Autumn
+            chromecastPlay.sendCommand("https://api-soft3888.ddns.net/autumn_sunrise.mp4")
+        } else if(month >= 6 && month <=8) {
+            // Winter
+            chromecastPlay.sendCommand("https://api-soft3888.ddns.net/winter_sunrise.mp4")
+        } else if(month >= 9 && month <=11) {
+            // Spring
+            chromecastPlay.sendCommand("https://api-soft3888.ddns.net/spring_sunrise.mp4")
+        } else {
+            // Summer
+            chromecastPlay.sendCommand("https://api-soft3888.ddns.net/summer_sunrise.mp4")
+        }
+        chromecastVolume.sendCommand(50)
+        chromecastControl.sendCommand(PLAY)
+    }
+end
+
+// TODO: Temperature change
+
+rule "cancel timer"
+when
+    Item TimerCancel changed from OFF to ON
+then
+    if(timer !== null) {
+        timer.cancel()
+        timer = null
+    }
+end

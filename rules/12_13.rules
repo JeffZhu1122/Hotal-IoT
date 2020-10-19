@@ -1,0 +1,76 @@
+// Lights color change according to the sunlight and weather outside (usually the brightest during this period)
+// Rule for time period 12:00pm to 01:00pm, Light functionality only
+rule "12:00pm - 01:00pm Lights"
+when
+    // cron compares the time to the cron expression given and activates when it is true
+    Time cron "0 0 12 ? * * *"  //or Item ruleTest changed from OFF to ON
+then
+    if (systemControl.state==ON) {
+        // pass the information to the light bulb, then turn it on with the specified settings
+        // dark outside (may be raining or cloudy)
+        if ((clouds.state as DecimalType) > 70) {
+            lightBulbsColor.sendCommand((new HSBType(new DecimalType(48), new PercentType(100), new PercentType(100))).toString)
+            lightStripsColor.sendCommand(ON)
+            lightStripsColor.sendCommand((new HSBType(new DecimalType(48), new PercentType(100), new PercentType(100))).toString)
+        }
+        // bright outside
+        else if ((clouds.state as DecimalType) <= 70) {
+            lightBulbsColor.sendCommand((new HSBType(new DecimalType(60), new PercentType(0), new PercentType(50))).toString)
+            lightStripsColor.sendCommand(ON)
+            lightStripsColor.sendCommand((new HSBType(new DecimalType(60), new PercentType(0), new PercentType(50))).toString)
+        }
+    }
+end
+
+// Projector changes to sunny lunch/brunch scene (if sunny) or raining scene (if raining)
+// Play the ambient sounds and songs from the lunch/brunch video
+// Rule for time period 12:00pm to 01:00pm, projector functionality only
+rule "12:00pm - 01:00pm Projector"
+when
+    // cron compares the time to the regex given and activates when it is true
+    Time cron "0 0 12 ? * * *"  //or Item ruleTest changed from OFF to ON
+then
+    if (systemControl.state==ON) {
+        // rainy or cloudy?
+        // send link and play on chromecast 
+        if ((rain.state as DecimalType) > 0 || (clouds.state as DecimalType) > 70) {
+            chromecastPlay.sendCommand("https://api-soft3888.ddns.net/lunch_rain.mp4")
+            chromecastVolume.sendCommand(50)
+            chromecastControl.sendCommand(PLAY)
+        } else {
+            chromecastPlay.sendCommand("https://api-soft3888.ddns.net/lunch_sunny.mp4")
+            chromecastVolume.sendCommand(100)
+            chromecastControl.sendCommand(PLAY)
+        }
+    }
+end
+
+// Set temperature between 19-22 degrees depending on season (19 degrees during summer, 22 degrees during winter)
+// Rule for time period 12:00pm to 01:00pm, temperature functionality only
+// No implementation yet, missing device
+rule "12:00pm - 01:00pm Temperature"
+when
+    // cron compares the time to the cron expression given and activates when it is true
+    Time cron "0 0 12 ? * * *" // or Item ruleTest changed from OFF to ON
+then
+    if (systemControl.state==ON) {
+        var month = now.getMonthOfYear
+
+        // Autumn
+        if(month >= 3 && month <= 5) {
+            
+        } 
+        // Winter
+        else if(month >= 6 && month <=8) {
+            
+        } 
+        // Spring
+        else if(month >= 9 && month <=11) {
+        
+        } 
+        // Summer
+        else {
+            
+        }
+    }
+end

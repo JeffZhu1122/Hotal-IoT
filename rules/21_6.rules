@@ -1,0 +1,32 @@
+rule "9:00pm - 6:00am lights and projector"
+when
+    // At 9pm everyday
+    Time cron "0 0 21 ? * * *" // or Item ruleTest changed from OFF to ON
+then
+    // If the system is on
+    if(systemControl.state==ON){
+        // Turn the main lights off
+        lightBulbsColor.sendCommand(OFF)
+        // Turn the light strips on to a dim orange
+        lightStripsColor.sendCommand(ON)
+        lightStripsColor.sendCommand(new HSBType("60,100,10").toString)
+        // Play a looping gif of a starry sky
+        chromecastPlay.sendCommand("https://api-soft3888.ddns.net/stars.gif")
+        chromecastControl.sendCommand(PLAY)
+    }
+end
+
+rule "9:00pm - 6:00am music"
+when
+    // Every six minutes starting at 9pm (this creates a loop for the music)
+    Time cron "0 */6 21-23,23,0-6 ? * *" // or Item ruleTest changed from OFF to ON
+then
+    // If the system is on
+    if(systemControl.state==ON){
+        // Play Beethoven's moonlight sonata 1st movement
+        nestPlay.sendCommand("https://api-soft3888.ddns.net/moonlight.mp3") 
+        nestVolume.sendCommand(20)
+        nestControl.sendCommand(PLAY)
+    }
+end 
+

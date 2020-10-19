@@ -1,0 +1,68 @@
+//As the room, I want to maintain an energetic environment, so I can keep fit.” It is actually an exercise time
+rule "15:00 to 16:00 light" //set the rule for light from 15:00 to 16:00; lights maintains bright
+when
+  Time cron "0 0 15 ? * * *" //or Item ruleTest changed from OFF to ON
+
+then
+    //Lights are bright
+    if(systemControl.state==ON){
+      lightBulbsColor.sendCommand(new HSBType("160,0,100"))
+      lightStripsColor.sendCommand(new HSBType("160,0,100"))
+      lightStripsColor.sendCommand(ON)
+    }
+
+    //Set temperature between 17-19OC depending on season (17OC during summer, 19OC during winter)
+    //not yet have IR; waiting for installation
+
+end
+
+rule "15:00 to 15:30 projector" //set the rule for projector from 15:00 to 15:30; projector will play workout tutorial video for 30 mins
+when
+  Time cron "0 0 15 ? * * *" //or Item ruleTest changed from OFF to ON
+
+then
+    //Projector play workout tutorial videos  
+    if(systemControl.state==ON){
+      chromecastPlay.sendCommand("https://api-soft3888.ddns.net/workout.mp4")
+      chromecastControl.sendCommand(PLAY)
+      chromecastVolume.sendCommand(100)
+    }
+end
+
+rule "15:30pm to 16:00 projector"//set the rule for light from 15:30 to 16:00; projector will play gym scene gif
+when
+  Time cron "0 30 15 ? * * *" //or Item ruleTest changed from OFF to ON
+
+then
+    //Projector changes to gym scene  
+    if(systemControl.state==ON){
+      chromecastPlay.sendCommand("https://media.self.com/photos/58e7dd9d3172253b0d06ff08/master/w_1600%2Cc_limit/Booty-Band-Side-Steps.gif")
+      chromecastControl.sendCommand(PLAY)
+      chromecastVolume.sendCommand(0)
+    }
+end
+
+rule "15:30pm to 16:00 Music" //set the rule for light from 15:30 to 16:00; google nest will play workout musics
+when
+  Time cron "0 30/2 15 ? * * *" 
+
+then
+    //Play the ambient sounds and songs from youtube workout music playlist 
+    if(systemControl.state==ON){
+      sendHttpGetRequest("https://request-soft3888.ddns.net/gym-sound")
+      nestControl.sendCommand(PLAY)
+    }
+end
+
+rule "15:59 music&projector stop" //set the rule for light from 15:59; stop playing music and projector
+when
+  Time cron "0 59 15 ? * * *" 
+
+then
+    //music & projector stop  
+    if(systemControl.state==ON){
+      chromecastStop.sendCommand(ON)
+      nestStop.sendCommand(ON)
+    }
+end
+

@@ -1,0 +1,109 @@
+var Timer timer1 = null
+var Timer timer2 = null
+var int bulbs_brightness = 0 
+var int strips_brightness = 0
+
+/* Light bulbs gradually turn off */
+
+rule "20:00 - 21:00 Light bulbs"
+when
+    Time cron "0 0 20-21 ? * * *" //or Item ruleTest changed from OFF to ON // 20:00-21:00 everyday
+then
+    if(systemControl.state==ON){
+        bulbs_brightness = 100
+        if (timer1 === null) {
+            timer1 = createTimer(now.plusSeconds(0), [ |  
+                
+                // bulbs fade out gradually
+                lightBulbsColor.sendCommand((new HSBType(new DecimalType(60), new PercentType(0), new PercentType(bulbs_brightness))).toString)
+                 if (bulbs_brightness == 0) { // Stop fading out when brightness is zero
+                    timer1 = null
+                } 
+                else {
+                    bulbs_brightness = bulbs_brightness - 1 // Decrease light bulbs' brightness
+                    timer1.reschedule(now.plusMillis(108000)) // Decrease brightness every 1.8 minutes
+                }
+            ])
+        }
+    }
+end
+
+/* Light strips turn to a dim yellow colour */
+rule "20:00 - 21:00 Light strips"
+when
+    Time cron "0 0 20-21 ? * * *" //or Item ruleTest changed from OFF to ON // 20:00-21:00 everyday
+then
+    if(systemControl.state==ON){
+        strips_brightness = 100
+        if (timer2 === null) {
+            timer2 = createTimer(now.plusSeconds(0), [ |  
+                
+                // strips' color getting dimmer
+                lightStripsColor.sendCommand((new HSBType(new DecimalType(60), new PercentType(0), new PercentType(strips_brightness))).toString)
+                if (strips_brightness <= 1) { // Stop getting dimmer when brightness is 1
+                    timer2 = null
+                } 
+                else {
+                    strips_brightness = strips_brightness - 4 // Decrease light strips' brightness
+                    timer2.reschedule(now.plusMillis(108000)) // Decrease brightness every 1.8 minutes
+                }
+            ])
+        }
+    }
+end
+
+/* Show a vivid campfire scene */
+
+rule "20:00 - 21:00 Projector & Music"
+when
+    Time cron "0 0/6 20-21 ? * * *" //or Item ruleTest changed from OFF to ON// 20:00-21:00 everyday
+then
+    if(systemControl.state==ON){
+        chromecastPlay.sendCommand("https://api-soft3888.ddns.net/campfire.mp4")
+        chromecastControl.sendCommand(PLAY)
+        chromecastVolume.sendCommand(50)
+    }
+end
+
+
+/* Stop showing a vivid campfire scene when the period comes to the end */
+
+rule "20:59 Projector & Music stop"
+when
+    Time cron "0 59 20 ? * * *" 
+then
+    if(systemControl.state==ON){
+        // Projector & Music stop  
+        chromecastStop.sendCommand(ON)
+    }
+  
+end
+
+
+rule "cancel timer"
+when
+    Item TimerCancel changed from OFF to ON
+then
+    if (timer1 !== null){
+        timer1.cancel()
+        timer1=null
+    }
+    if (timer2 !== null){
+        timer2.cancel()
+        timer2=null
+    }
+     
+end
+
+
+
+/* Wait to be implemented in the future */
+rule "20:00 - 21:00 Temperature"
+when
+    Time cron "0 0 20-21 ? * * *" // 20:00-21:00 everyday
+then
+    if(systemControl.state==ON){
+
+    }
+
+end

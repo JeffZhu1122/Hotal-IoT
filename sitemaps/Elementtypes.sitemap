@@ -1,0 +1,60 @@
+sitemap Elementtypes label="Demo" {
+
+    Frame label="Weather" {
+        Default item=rain
+        Default item=clouds
+    }
+
+    Frame label="Manual Override"{
+        Default item=ManualOverride
+        Default item=TimerCancel
+        Default item=ruleTest
+        Default item=systemControl
+    }
+
+    Frame label="Light Switches" visibility=[ManualOverride=="ON"]  {
+        Default item=lightBulb1Switch visibility=[ManualOverride=="ON"]
+        Default item=lightBulb2Switch visibility=[ManualOverride=="ON"]
+        Default item=lightBulb3Switch visibility=[ManualOverride=="ON"]
+        Default item=lightBulb4Switch visibility=[ManualOverride=="ON"]
+        Default item=lightBulb5Switch visibility=[ManualOverride=="ON"]
+        Default item=lightStrip1Switch visibility=[ManualOverride=="ON"]
+        Default item=lightStrip2Switch visibility=[ManualOverride=="ON"]
+    }
+
+    Frame label="Z-Wave" {
+        Default item=SensorTemperature icon="Temperature"
+        Default item=BatteryLevel icon="Battery"
+        Default item=AlarmMotion1
+        Default item=SensorLuminance1 icon="light"
+        Default item=BatteryLevel1 icon="Battery"
+        Default item=AlarmMotion2
+        Default item=SensorLuminance2 icon="light"
+        Default item=BatteryLevel2 icon="Battery"
+    }
+
+    Frame label="Chromecast" {
+        Default item=chromecastControl
+        Default item=chromecastPlay
+        Default item=chromecastVolume
+    }
+
+    Frame label="Google Nest Mini" {
+        Default item=nestControl
+        Default item=nestPlay
+        Default item=nestVolume
+    }
+
+    Frame label="Alarm" {
+        Webview url="https://api-soft3888.ddns.net/alarm.html" height=3 icon="Alarm"
+    }
+
+    Frame label="Movie" {
+        Webview url="https://api-soft3888.ddns.net/movie.html" height=3 icon="Alarm"
+    }
+
+    Frame label="Music" {
+        Webview url="https://api-soft3888.ddns.net/music.html" height=3 icon="Alarm"
+    }
+    
+}

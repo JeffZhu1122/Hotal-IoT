@@ -1,0 +1,26 @@
+rule "9:00am - 9:30am"
+when
+    // At 9am everyday
+    Time cron "0 0 9 ? * * *" // or Item ruleTest changed from OFF to ON
+then
+    // If the system is on
+    if(systemControl.state==ON){
+        // Turn the lights to yellow
+        lightBulbsColor.sendCommand(new HSBType("64,100,100").toString())
+        lightStripsColor.sendCommand(new HSBType("64,100,100").toString())
+        // Stop whatever is currently playing
+        chromecastControl.sendCommand(PAUSE)
+        // If it is raining
+        if((rain.state as DecimalType).intValue > 0) {
+            // Play rain video and ambience
+            chromecastPlay.sendCommand("https://api-soft3888.ddns.net/rain.mp4")
+        } else {
+            // Otherwise play waterfall video and ambience
+            chromecastPlay.sendCommand("https://api-soft3888.ddns.net/waterfall.mp4")
+        }
+        chromecastVolume.sendCommand(50)
+        chromecastControl.sendCommand(PLAY)
+    }
+end
+
+// TODO: Temperature change

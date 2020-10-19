@@ -1,0 +1,67 @@
+var Timer timer = null
+var int brightness = 100
+
+// Lights color change according to the sunlight and weather outside (usually the brightest during this period)
+rule "18:00pm - 19:00pm Lights"
+when
+    Time cron "0 0 18 ? * * *" //or Item ruleTest changed from OFF to ON
+then
+    if(systemControl.state==ON){
+        if (timer === null) {
+            timer = createTimer(now.plusSeconds(0), [ |   
+                if (brightness <= 50) {
+                    timer = null
+                } else {
+                    lightBulbsColor.sendCommand(new HSBType(new DecimalType(60), new PercentType(80), new PercentType(brightness)))
+                    lightStripsColor.sendCommand(new HSBType(new DecimalType(60), new PercentType(80), new PercentType(brightness)))
+                    brightness=brightness-1
+                    timer.reschedule(now.plusMillis(108000)) // Increase brightness every 1.8 minutes
+                }
+            ])
+        }
+    }
+end
+
+// Projector change according to the sunlight and weather outside (usually the brightest during this period)
+rule "18:00pm - 19:00pm Projector"
+when
+    Time cron "0 0 18 ? * * *" //or Item ruleTest changed from OFF to ON
+then
+    if(systemControl.state==ON){
+        if((rain.state as DecimalType) > 0) {
+            // Raining
+            chromecastPlay.sendCommand("https://api-soft3888.ddns.net/rain.gif")
+        } else {
+            // Not raining
+            chromecastPlay.sendCommand("https://api-soft3888.ddns.net/sunny.gif")
+        }
+    }
+end
+
+// Sounds change according to the sunlight and weather outside (usually the brightest during this period)
+rule "18:00pm - 19:00pm sound"
+when
+    Time cron "0 0/4 18,19 ? * *" //or Item ruleTest changed from OFF to ON 
+then
+    if(systemControl.state==ON){
+        sendHttpGetRequest("https://request-soft3888.ddns.net/michelin-sound")
+    }
+end
+
+// rule "13:00pm - 15:00pm Temperature"
+// when
+//     Time cron "0 0 13 ? * * *"
+// then
+
+// end
+
+
+rule "cancel timer"
+when
+    Item TimerCancel changed from OFF to ON
+then
+    if(timer !== null) {
+        timer.cancel()
+        timer = null
+    }
+end

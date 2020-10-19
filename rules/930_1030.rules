@@ -1,0 +1,39 @@
+//This is the rule for time between 9:30 AM and 10:30 AM
+//Right now depnds on the weatehr outside 
+//the lightbulbs, light strips, speaker and projector will behave differently
+
+/*
+The syntax follows as rule + "<name of your rule"
+                      when
+                          <Trigger conditon> [or <trigger condtion 2> and <trigger conditon3>...]
+                      then
+                          <script>
+                      end
+*/
+rule "930_1030 am"
+when
+    Time cron "0 30 9 ? * * *" // A time trigger (can be any other stuff i.e. a switch)
+then
+    if(systemControl.state == ON){
+        // If raining or cloudy
+        if((clouds.state as DecimalType) >= 50 || (rain.state as DecimalType) > 0){
+            lightBulbsColor.sendCommand((new HSBType(new DecimalType(26), new PercentType(100), new PercentType(52))).toString)
+            //light strip has to be on before changing their color 
+            lightStripsColor.sendCommand(ON)
+            lightStripsColor.sendCommand((new HSBType(new DecimalType(26), new PercentType(90), new PercentType(10))).toString)
+            // Play cafe raining scene
+            chromecastPlay.sendCommand("https://api-soft3888.ddns.net/cafe_rain.mp4")
+            chromecastVolume.sendCommand(100)
+            chromecastControl.sendCommand(PLAY)
+        } else{
+            // Play cafe not raining scene
+            lightBulbsColor.sendCommand((new HSBType(new DecimalType(190), new PercentType(100), new PercentType(22))).toString)
+            lightStripsColor.sendCommand(OFF)
+            chromecastPlay.sendCommand("https://api-soft3888.ddns.net/cafe_day.mp4")
+            chromecastVolume.sendCommand(50)
+            chromecastControl.sendCommand(PLAY)
+        }
+    }
+
+end
+//TODO -temperature

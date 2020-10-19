@@ -1,0 +1,31 @@
+
+rule "13:00pm - 15:00pm Lights"
+when
+    Time cron "0 0 13 ? * * *" //or Item ruleTest changed from OFF to ON
+then
+    if(systemControl.state==ON){
+        lightBulbsColor.sendCommand(new HSBType("180,0,100"))
+        lightStripsColor.sendCommand(new HSBType("180,0,100"))
+        lightStripsColor.sendCommand(ON)
+    }
+end
+
+
+rule "13:00pm - 15:00pm Projector & sound"
+when
+    Time cron "0 0 13 ? * * *" // or Item ruleTest changed from OFF to ON
+then
+    if(systemControl.state==ON){
+        chromecastPlay.sendCommand("https://api-soft3888.ddns.net/black.png")
+        nestStop.sendCommand(ON)
+    }
+end
+
+// rule "13:00pm - 15:00pm Temperature"
+// when
+//     Time cron "0 0 13 ? * * *"
+// then
+
+// end
+
+
